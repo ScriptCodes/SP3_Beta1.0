@@ -10,12 +10,23 @@ import java.util.List;
 import java.util.Scanner;
 import java.io.FileReader;
 
+/**
+ * @author Mads, Kevin, Daniel
+ * The following class reads all data from the provided data files
+ */
+
 public class FileIO {
     Movie movie;
     File file;
     Series serie;
     ArrayList<Movie> movies = new ArrayList<>();
     ArrayList<Series> series = new ArrayList<>();
+
+    /**
+     * The following methods reads from data files
+     * @return list of users created in the database
+     * @throws FileNotFoundException in case the file is not read properly
+     */
 
     public ArrayList<User> readUserData() {
 
@@ -43,6 +54,11 @@ public class FileIO {
         return users;
     }
 
+    /**
+     * The following method allows to save user data created
+     * @param newUsersList
+     * @throws IOException in case 
+     */
     public void saveUserData(ArrayList<User> newUsersList) {
         try {
             Path filePath = Path.of("src/main/java/org/example/database.txt");
@@ -137,7 +153,7 @@ public class FileIO {
                     String[] genres = parts[2].split(", ");
                     double rating = Double.parseDouble(parts[3].replace(",", ".").trim());
 
-                    String[] seasonParts = parts[4].split(", ");
+                    String[] seasonParts = parts[4].split(",");
                     int totalSeasons = 0;
 
                     for (String seasonPart : seasonParts) {
@@ -149,7 +165,7 @@ public class FileIO {
                         }
 
                         int startSeason = Integer.parseInt(seasonInfo[0].trim());
-                        int endSeason = Integer.parseInt(seasonInfo[1].trim());
+                        int endSeason = Integer.parseInt(seasonInfo[0].trim());
                         totalSeasons += endSeason - startSeason + 1;
                     }
                     Series serie = new Series(title, startYear, endYear, genres, rating, totalSeasons);

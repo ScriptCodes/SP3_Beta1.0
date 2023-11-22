@@ -24,7 +24,7 @@ public class Series {
 
     public String[] getGenre(){
 
-        return null;
+        return genre;
     }
 
 

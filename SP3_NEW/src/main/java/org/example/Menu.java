@@ -1,4 +1,5 @@
 package org.example;
+import java.security.PublicKey;
 import java.util.ArrayList;
 public class Menu {
     ArrayList<User> users = new ArrayList<>();
@@ -16,7 +17,11 @@ public class Menu {
     private int currentIndex;
 
     Movie selectedMovie;
+    Series selectedSeries;
     private boolean movieSelected = false;
+    private ArrayList<Series> seriesList;
+    private boolean seriesSelected = false;
+
     public Menu() {
         currentIndex = 0;
 
@@ -56,7 +61,7 @@ public class Menu {
 
     public void displayUserOptions() {
         ui.displayMsg("What do you want to do?: ");
-        ui.displayMsg("1.Watch movie" + "\n" + "2.Watch series" + "\n" + "3.Go to My Favorite Movies" + "\n" + "4.Display movies/series by genre");
+        ui.displayMsg("1.Watch movie" + "\n" + "2.Watch series" + "\n" + "3.Go to My Favorite Movies" + "\n" + "4.Watch movies/series by genre");
 
         String options = ui.getInput("");
 
@@ -84,7 +89,7 @@ public class Menu {
        /* File file = new File("src/main/java/org/example/100bedstefilm.txt");
         String aInput = ui.getInput("");*/
         ui.displayMsg("What do you want to do?: ");
-        ui.displayMsg("1.Watch movie" + "\n" + "2.Watch series" + "\n" + "3.Go to My Favorite Movies" + "\n" + "4.Display movies/series by genre" + "\n" + "5.Admin panel");
+        ui.displayMsg("1.Watch movie" + "\n" + "2.Watch series" + "\n" + "3.Go to My Favorite Movies" + "\n" + "4.Watch movies/series by genre" + "\n" + "5.Admin panel");
 
 
         String options = ui.getInput("");
@@ -100,7 +105,7 @@ public class Menu {
                 displayMyFavorites();
                 break;
             case "4":
-                searchByGenreMovie();
+                genreMenu();
                 break;
             case "5":
                 adminPanel();
@@ -111,20 +116,30 @@ public class Menu {
         }
 
     }
+    public void genreMenu(){
+        ui.displayMsg("What do you want to do?: ");
+        ui.displayMsg("1.Sort movie by genre" + "\n" + "2.Sort series by genre" + "\n" + "3.Sort movie/series by genre");
+
+        String genreOptions = ui.getInput("");
+
+        switch (genreOptions){
+            case "1":
+                searchByGenreMovie();
+                break;
+
+            case "2":
+                searchByGenreSeries();
+                break;
+
+            default:
+                ui.displayMsg("None of the options was selected");
+        }
+    }
 
     public void displayMyFavorites() {
         ui.displayMsg("----------------- My Favorites -----------------");
     }
 
-    public void displaySeries() {
-
-        ui.displayMsg("----------------- All Series -----------------");
-        ArrayList<Series> seriesList = io.readSeriesData();
-        for (Series series : seriesList) {
-            System.out.println(series.toString());
-
-        }
-    }
 
     public void displayMovies() {
         movieList = io.readMovieData();
@@ -139,9 +154,24 @@ public class Menu {
         displayNavigationOptionsMovie();
     }
 
-    public ArrayList<Movie> searchByGenreMovie() {
+    public void displaySeries() {
+        seriesList = io.readSeriesData();
 
+        ui.displayMsg("----------------- All Series -----------------");
+        int pageSize = 10;
+
+        for (int i = currentIndex; i < Math.min(currentIndex + pageSize, seriesList.size()); i++) {
+            System.out.println((i - currentIndex + 1) + ". " + seriesList.get(i).toString());
+        }
+
+        displayNavigationOptionsSeries();
+    }
+
+
+
+    public ArrayList<Movie> searchByGenreMovie() {
         ArrayList<Movie> matchingMovie = io.readMovieData();
+        ArrayList<Movie> allMovies = new ArrayList<>();
         ui.displayMsg("Please enter the genre you're looking for");
         String input = ui.getInput("");
         for (Movie movie : matchingMovie) {
@@ -155,16 +185,17 @@ public class Menu {
         }
         return matchingMovie;
     }
-/*
-    public ArrayList<Series> searchByGenreSeries() {
 
+    public ArrayList<Series> searchByGenreSeries() {
         ArrayList<Series> matchingSeries = io.readSeriesData();
+
 
         ui.displayMsg("Please enter the genre you're looking for");
         String input = ui.getInput("");
         for (Series series : matchingSeries) {
-            String[] movieGenres = series.getGenre().split(", ");
-            for (String genre : movieGenres) {
+        String[] seriesGenres = series.getGenre();
+
+            for (String genre : seriesGenres) {
                 if (input.equalsIgnoreCase(genre.trim())) {
                     System.out.println(series);
                     break;
@@ -173,7 +204,7 @@ public class Menu {
         }
         return matchingSeries;
     }
-*/
+
     public void adminPanel(){
 
         ui.displayMsg("1.Remove Media "+"\n"+"2.Add Media");
@@ -209,7 +240,6 @@ public class Menu {
                 break;
             case "S":
                 selectMovie();
-                // Set movieSelected to true when a movie is selected
                 movieSelected = true;
                 return;
             case "E":
@@ -226,11 +256,49 @@ public class Menu {
                 return;
         }
 
-        // Only call displayMovies() if a movie is not selected
         if (!movieSelected) {
             displayMovies();
         }
     }
+
+    private void displayNavigationOptionsSeries() {
+        ui.displayMsg("N. Next 10 series");
+        ui.displayMsg("P. Previous 10 series");
+        ui.displayMsg("S. Select a series");
+        ui.displayMsg("E. Exit");
+
+        String choice = ui.getInput("Enter your choice: ");
+
+        switch (choice.toUpperCase()) {
+            case "N":
+                currentIndex += 10;
+                break;
+            case "P":
+                currentIndex = Math.max(0, currentIndex - 10);
+                break;
+            case "S":
+                selectSeries();
+                seriesSelected = true;
+                return;
+            case "E":
+                if (login.getLoggedInUser() != null) {
+                    if (login.getLoggedInUser().getIsAdmin()) {
+                        displayAdminOptions();
+                    } else {
+                        displayUserOptions();
+                    }
+                }
+                break;
+            default:
+                ui.displayMsg("Invalid choice. Please enter a valid option.");
+                return;
+        }
+
+        if (!seriesSelected) {
+            displaySeries();
+        }
+    }
+
     private void selectMovie() {
         int pageSize = 10;
 
@@ -240,14 +308,36 @@ public class Menu {
             if (movieIndex >= 1 && movieIndex <= pageSize && currentIndex + movieIndex - 1 < movieList.size()) {
                 selectedMovie = movieList.get(currentIndex + movieIndex - 1);
                 ui.displayMsg("Selected Movie: " + selectedMovie.toString());
-                // Optionally, you can perform additional actions with the selected movie
                 currentlyPlaying();
-                return; // Exit the method if a valid movie is selected
+                return;
             } else {
                 ui.displayMsg("Invalid movie number. Please enter a valid number.");
                 break;
             }
         }
+    }
+
+    private void selectSeries() {
+        int pageSize = 10;
+
+        while (true) {
+            int seriesIndex = ui.getIntInput("Enter the number of the series you want to select:");
+
+            if (seriesIndex >= 1 && seriesIndex <= pageSize && currentIndex + seriesIndex - 1 < seriesList.size()) {
+                selectedSeries = seriesList.get(currentIndex + seriesIndex - 1);
+                ui.displayMsg("Selected Series: " + selectedSeries.toString());
+                currentlyWatchingSeries();
+                return;
+            } else {
+                ui.displayMsg("Invalid series number. Please enter a valid number.");
+                break;
+            }
+        }
+    }
+
+    private void currentlyWatchingSeries() {
+        System.out.println("-------------------------------------");
+        System.out.println("You are now watching:\n" + selectedSeries);
     }
 
 
@@ -256,5 +346,31 @@ public class Menu {
         System.out.println("You are now watching:\n" + selectedMovie);
 
     }
+
+
+    private void FavoriteMenu(){
+
+        ui.displayMsg("1.Add movie/series to favorites"+ "\n" + "2.Exit to main menu");
+        String favInput=ui.getInput("");
+
+        switch (favInput){
+            case "1":
+                user.addToFavorites();
+                break;
+            case "2":
+                if (login.getLoggedInUser() != null) {
+                    if (login.getLoggedInUser().getIsAdmin()) {
+                        displayAdminOptions();
+                    } else {
+                        displayUserOptions();
+                    }
+                }
+                break;
+            default:
+                ui.displayMsg("None of the options was selected");
+        }
+    }
+
+
 
 }

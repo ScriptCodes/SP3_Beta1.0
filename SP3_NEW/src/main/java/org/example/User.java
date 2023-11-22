@@ -13,6 +13,7 @@ public class User {
     private boolean isAdmin = false;
     private ArrayList<User> newUsersList = new ArrayList<>();
     private ArrayList<String> myWatchList;
+    Menu menu = new Menu();
 
     public User(String username, String password, boolean isAdmin){
 
@@ -54,6 +55,10 @@ private void createTextFile(User user) {
     }
 }
 
+public void addToFavorites(){
+        
+}
+
 //Create new file.txt for both Watch Later and My List
 
     public void setUsername(String username){
@@ -85,27 +90,7 @@ private void createTextFile(User user) {
         return this.isAdmin;
     }
 
-    //regionend
-/*
-    public void addToFavorites(String movieTitle){
-        if(myWatchList == null){
-            myWatchList = new ArrayList<>();
-        }
-        myWatchList.add(movieTitle);
-        ui.displayMsg(movieTitle + " added to your watch list");
-    }
-public void displayMyWatchList(){
-    if (myWatchList == null || myWatchList.isEmpty()) {
-        System.out.println("No movies in your watch list");
-    } else {
-        System.out.println("Here are the movies in your watch list:");
-        for (String movie : myWatchList) {
-            System.out.println(movie);
-        }
-    }
-}
 
-*/
     @Override
     public String toString(){
 

@@ -12,6 +12,7 @@ public class Streaming {
       menu.loginMenu();
        // io.readSeriesData();
     //login.login(users);
+        //menu.searchByGenreSeries();
     }
 
 
