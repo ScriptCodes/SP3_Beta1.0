@@ -26,8 +26,13 @@ public void loginMenu(){
             ui.displayMsg("Please type your Username and password:");
             //login.login(users);//Go to Login
              login.login(users);
-
-
+             if(login.getLoggedInUser() !=null) {
+                 if (login.getLoggedInUser().getIsAdmin()) {
+                     displayAdminOptions();
+                 } else {
+                     displayUserOptions();
+                 }
+             }
             break;
         case "2":
             ui.displayMsg("Please write your desired username!\n");
@@ -108,38 +113,16 @@ public void displayUserOptions() {
         }
 
     }
-
-
-
-
-
 public void displayMyList(){
-
-
 }
-
-
 public void displayWatchLater(){
-
 }
-
-
 public void displaySeries(){
-
-
 }
-
 public void displayMovies(){
-
-
 }
-
-
 public void displayByGenre(){
-
-
 }
-
 public void adminPanel(){
 
    // ui.displayMsg("1.Remove Media "+ "\n"+"2.Add Media");

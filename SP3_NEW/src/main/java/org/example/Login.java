@@ -31,17 +31,27 @@ public class Login {
 
                 if (user.getIsAdmin()) {
                     ui.displayMsg("You have admin features");
+                    loggedInUser = user;
+                    return;
                 }
-                scan.close();
+                loggedInUser = user;
                 return;
             }
         }
-
         ui.displayMsg("invalid username or password");
-scan.close();
+        scan.close();
     }
 
     public User getLoggedInUser() {
         return loggedInUser;
+    }
+
+    public String getUsernameInput(){
+        this.usernameInput = usernameInput;
+        return usernameInput;
+    }
+    public String getPasswordInput(){
+        this.passwordInput = passwordInput;
+        return passwordInput;
     }
 }
