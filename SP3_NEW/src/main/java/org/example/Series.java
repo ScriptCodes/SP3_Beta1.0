@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.ArrayList;
+
 public class Series {
 
     private String title;
@@ -9,6 +11,7 @@ public class Series {
     private int seasons;
     private int endYear;
 
+
     public Series(String title, int year, int endYear, String[] genres, double rating, int seasons) {
         this.title = title;
         this.year = year;
@@ -17,6 +20,13 @@ public class Series {
         this.rating = rating;
         this.seasons = seasons;
     }
+
+
+    public String[] getGenre(){
+
+        return null;
+    }
+
 
     @Override
     public String toString() {

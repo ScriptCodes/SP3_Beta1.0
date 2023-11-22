@@ -37,8 +37,16 @@ public class Login {
                 loggedInUser = user;
                 return;
             }
+           /* } else if (!usernameInput.equalsIgnoreCase((user.getUsername()) && !passwordInput.equals(user.getPassword()))){
+
+
+
+            }*/
+
         }
-        ui.displayMsg("invalid username or password");
+         ui.displayMsg("Invalid username or password" +"\n" + "Please try again");
+
+        login(users1);
         scan.close();
     }
 

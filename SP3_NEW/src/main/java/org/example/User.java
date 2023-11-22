@@ -1,6 +1,9 @@
 package org.example;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.ArrayList;
+import java.nio.file.Path;
 
 public class User {
     FileIO io = new FileIO();
@@ -19,17 +22,40 @@ public class User {
        // myWatchList = new ArrayList<>();
 
     }
-    public void createUser(String uInputUsername, String uInputPassword,boolean isAdmin){
-        User newUser = new User(uInputUsername,uInputPassword,isAdmin);
+    public void createUser(String uInputUsername, String uInputPassword,boolean isAdmin) {
+        User newUser = new User(uInputUsername, uInputPassword, isAdmin);
 
         newUsersList.add(newUser);
 
         io.saveUserData(newUsersList);
 
+        createTextFile(newUser);
+    }
+private void createTextFile(User user) {
+    try {
 
+        String fileName = "src/main/java/org/example/favorites/" + user.getUsername() + ".txt";
+        Path filePath = Path.of(fileName);
+
+        if (!Files.exists(filePath)) {
+            Files.createFile(filePath);
+        }
+
+        List<String> userCredentials = new ArrayList<>();
+        userCredentials.add("Username: " + user.getUsername());
+
+
+        Files.write(filePath, userCredentials);
+
+        ui.displayMsg("User file created: " + fileName);
+
+    } catch (IOException e) {
+        System.out.println("Error creating user file: " + e.getMessage());
+    }
+}
 
 //Create new file.txt for both Watch Later and My List
-    }
+
     public void setUsername(String username){
         this.username = username;
 

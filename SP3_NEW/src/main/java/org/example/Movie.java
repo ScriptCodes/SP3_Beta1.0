@@ -16,6 +16,9 @@ public class Movie {
 
     }
 
+    String getGenre(){
+        return genre;
+    }
 
     @Override
     public String toString() {

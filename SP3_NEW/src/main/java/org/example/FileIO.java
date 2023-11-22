@@ -14,6 +14,8 @@ public class FileIO {
     Movie movie;
     File file;
     Series serie;
+    ArrayList<Movie> movies = new ArrayList<>();
+    ArrayList<Series> series = new ArrayList<>();
 
     public ArrayList<User> readUserData() {
 
@@ -61,11 +63,11 @@ public class FileIO {
         }
     }
 
-    public void readMovieData() {
+    public ArrayList<Movie> readMovieData() {
 
 
         File movieFile = new File("src/main/java/org/example/100bedstefilm.txt");
-        ArrayList<Movie> movies = new ArrayList<>();
+
 
 
         try (BufferedReader br = new BufferedReader(new FileReader(movieFile))) {
@@ -90,17 +92,17 @@ public class FileIO {
             System.out.println("Error reading/adding movies from text file" + e.getMessage());
 
         }
-
+            return movies;
         /*for (Movie movie : movies) {
             System.out.println(movie);*/
     }
 
 
-    public void readSeriesData() {
+    public ArrayList<Series> readSeriesData() {
 
 
         File seriesFile = new File("src/main/java/org/example/100bedsteserier.txt");
-        ArrayList<Series> series = new ArrayList<>();
+
 
 
         try (BufferedReader br = new BufferedReader(new FileReader(seriesFile))) {
@@ -157,10 +159,11 @@ public class FileIO {
         } catch (IOException e) {
             System.out.println("Error reading/adding series from text file: " + e.getMessage());
         }
-
+        /*
         for (Series serie : series) {
             System.out.println(serie);
-        }
+        }*/
+        return series;
     }
 
     private int parseIntSafe(String s) {

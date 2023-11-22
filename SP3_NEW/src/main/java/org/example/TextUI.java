@@ -2,12 +2,7 @@ package org.example;
 import java.util.Scanner;
 
 public class TextUI {
-
-
     private Scanner scan = new Scanner(System.in);
-
-
-
 
     public String displayMsg(String msg){
 
@@ -16,21 +11,14 @@ public class TextUI {
         return msg;
 
     }
-
-
-
-
     public String getInput(String msg){
 
-        System.out.println(msg);
         return scan.nextLine();
     }
 
+    public int getIntInput(String msg){
 
-
-
-
-
-
-
+        System.out.println(msg);
+        return scan.nextInt();
+    }
 }

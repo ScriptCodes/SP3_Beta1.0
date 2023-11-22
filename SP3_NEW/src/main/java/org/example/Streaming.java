@@ -9,7 +9,7 @@ public class Streaming {
     Login login = new Login();
     FileIO io = new FileIO();
     public void setup(){
-       menu.loginMenu();
+      menu.loginMenu();
        // io.readSeriesData();
     //login.login(users);
     }
