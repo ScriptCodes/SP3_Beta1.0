@@ -1,9 +1,13 @@
 package org.example;
 
-import java.util.ArrayList;
+/**
+ * @author Mads, Kevin, Daniel
+ * Series class
+ * with necessary attributes
+ */
 
 public class Series {
-
+//Attributes
     private String title;
     private int year;
     private String[] genre;
@@ -11,7 +15,7 @@ public class Series {
     private int seasons;
     private int endYear;
 
-
+    //Constructor
     public Series(String title, int year, int endYear, String[] genres, double rating, int seasons) {
         this.title = title;
         this.year = year;
@@ -21,34 +25,69 @@ public class Series {
         this.seasons = seasons;
     }
 
-
-    public String[] getGenre(){
-
+    /**
+     * Getter to get genre of the series
+     * @return return the genre as a string
+     */
+    public String[] getGenres() {
         return genre;
     }
-
-
+    /**
+     * Getter to get title of movie
+     * @return returns the title of the movie
+     */
+    public String getTitle(){
+        return title;
+    }
+    public int getYear(){
+        return year;
+    }
+    public int getEndYear(){
+        return endYear;
+    }
+    public double getRating(){
+        return rating;
+    }
+    public int getSeasons(){
+        return seasons;
+    }
+    public int getStartYear() {
+        return year;
+    }
+    public int[] getSeasonsArray() {
+        int[] seasonsArray = new int[seasons];
+        for (int i = 0; i < seasons; i++) {
+            seasonsArray[i] = i + 1;
+        }
+        return seasonsArray;
+    }
+    /**
+     * toString method
+     * @return returns the toString of the series in a nice looking way
+     */
     @Override
     public String toString() {
         String genreString = arrayToString(genre);
-        return "Series: " +
+        return "Series:" +
                 "Title: '" + title + '\'' +
                 ", Year: '" + year +
                 ", Genre: " + genreString +
                 ", Rating: " + rating +
                 ", Seasons: " + seasons;
     }
-
-    // Helper method to convert array to string
+    /**
+     * Helper method to convert array to string
+     * @param array
+     * @return
+     */
     private String arrayToString(String[] array) {
-        String result = "[";
-        for (int i = 0; i < array.length; i++) {
-            result += "'" + array[i] + "'";
-            if (i < array.length - 1) {
-                result += ", ";
-            }
+        if (array.length == 0) {
+            return "";
         }
-        result += "]";
-        return result;
+        StringBuilder result = new StringBuilder(array[0]);
+        for (int i = 1; i < array.length; i++) {
+            result.append(", ").append(array[i]);
+        }
+        return result.toString();
     }
 }

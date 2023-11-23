@@ -1,14 +1,11 @@
 package org.example;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.io.FileReader;
 
 /**
  * @author Mads, Kevin, Daniel
@@ -16,6 +13,7 @@ import java.io.FileReader;
  */
 
 public class FileIO {
+    TextUI ui = new TextUI();
     Movie movie;
     File file;
     Series serie;
@@ -57,7 +55,7 @@ public class FileIO {
     /**
      * The following method allows to save user data created
      * @param newUsersList
-     * @throws IOException in case 
+     * @throws IOException in case of saving user data doesn't save properly
      */
     public void saveUserData(ArrayList<User> newUsersList) {
         try {
@@ -78,7 +76,12 @@ public class FileIO {
             System.out.println("Error saving user data: " + e.getMessage());
         }
     }
-
+    /**
+     * The following method reads data from the data file
+     * splits the different parts the file is seperated into
+     * @return list of all movies
+     * @throws IOException in case there is an error while reading from file
+     */
     public ArrayList<Movie> readMovieData() {
 
 
@@ -90,18 +93,13 @@ public class FileIO {
             String line;
             while ((line = br.readLine()) != null) {
 
-
                 String[] parts = line.split(";");
                 String title = parts[0].trim();
                 int year = Integer.parseInt(parts[1].trim());
                 String genres = parts[2].trim();
                 double rating = Double.parseDouble(parts[3].replace(",", ".").trim());
-
-
                 movie = new Movie(title, year, genres, rating);
                 movies.add(movie);
-
-
             }
 
         } catch (IOException e) {
@@ -109,17 +107,17 @@ public class FileIO {
 
         }
             return movies;
-        /*for (Movie movie : movies) {
-            System.out.println(movie);*/
     }
-
+    /**
+     * The following method reads data from the data file
+     *  * splits the different parts the file is seperated into
+     * @return list of all series
+     * @throws IOException in case there is an error while reading from file
+     */
 
     public ArrayList<Series> readSeriesData() {
 
-
         File seriesFile = new File("src/main/java/org/example/100bedsteserier.txt");
-
-
 
         try (BufferedReader br = new BufferedReader(new FileReader(seriesFile))) {
             String line;
@@ -130,18 +128,12 @@ public class FileIO {
 
                 if (parts.length >= 5) {
                     String title = parts[0].trim();
-
-
                     String[] years = parts[1].split("-");
                     int startYear, endYear;
-
-
                     if (years.length == 2) {
                         startYear = parseIntSafe(years[0].trim());
                         endYear = parseIntSafe(years[1].trim());
                     } else if (years.length == 1 && !years[0].isEmpty()) {
-
-
                         startYear = parseIntSafe(years[0].trim());
                         endYear = startYear;
                     } else {
@@ -149,21 +141,17 @@ public class FileIO {
                         System.out.println("Problematic line: " + line);
                         continue;
                     }
-
                     String[] genres = parts[2].split(", ");
                     double rating = Double.parseDouble(parts[3].replace(",", ".").trim());
-
                     String[] seasonParts = parts[4].split(",");
                     int totalSeasons = 0;
 
                     for (String seasonPart : seasonParts) {
                         String[] seasonInfo = seasonPart.split("-");
-
                         if (seasonInfo.length != 2) {
                             System.out.println("Error reading season info for series: " + title);
                             continue;
                         }
-
                         int startSeason = Integer.parseInt(seasonInfo[0].trim());
                         int endSeason = Integer.parseInt(seasonInfo[0].trim());
                         totalSeasons += endSeason - startSeason + 1;
@@ -175,14 +163,139 @@ public class FileIO {
         } catch (IOException e) {
             System.out.println("Error reading/adding series from text file: " + e.getMessage());
         }
-        /*
-        for (Series serie : series) {
-            System.out.println(serie);
-        }*/
+
         return series;
     }
 
+    /**
+     *The following method makes the admin able to remove a movie by title
+     * @param title takes title as parameter to delete that title
+     */
+    public void removeMovieByTitle(String title){
+        ArrayList<Movie> movies = readMovieData();
+
+        movies.removeIf(movie -> movie.getTitle().equalsIgnoreCase(title));
+
+        saveMovieData(movies);
+    }
+
+    /**
+     *The following method makes the admin able to remove a series by title
+     * @param title takes the title as paramter to delete that title
+     */
+    public void removeSeriesByTitle(String title) {
+
+        ArrayList<Series> existingSeries = readSeriesData();
+
+        existingSeries.removeIf(serie -> serie.getTitle().equalsIgnoreCase(title));
+
+        saveSeriesData(existingSeries);
+    }
+
+    /**
+     * The following method makes the admin able to add a movie
+     * @param movie takes movie as parameter to add as a movie
+     */
+    public void addMovie(Movie movie) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/org/example/100bedstefilm.txt", true))) {
+            String movieData = String.format("%s; %d; %s; %.1f;", movie.getTitle(), movie.getYear(), String.join(", ", movie.getGenre()), movie.getRating());
+            writer.write(movieData);
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error adding movie: " + e.getMessage());
+        }
+    }
+    /**
+     * The following method makes the admin able to add a series
+     * @param series takes series as parameter to add as a series
+     */
+    public void addSeries(Series series) {
+
+        ArrayList<Series> existingSeries = readSeriesData();
+
+        existingSeries.add(series);
+
+        saveSeriesData(existingSeries);
+    }
+
+    /**
+     *The following method updates and saves the file that stores movies
+     * @param movies takes a movie as parameter to store that movie
+     */
+    private void saveMovieData(ArrayList<Movie> movies){
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/org/example/100bedstefilm.txt"))){
+            for (Movie movie : movies){
+                String movieData = String.format("%s; %d; %s; %.1f;", movie.getTitle(), movie.getYear(), String.join(", ", movie.getGenre()), movie.getRating());
+                writer.write(movieData);
+                writer.newLine();
+            }
+        } catch (IOException e){
+            System.out.println("Error saving movie data " + e.getMessage());
+        }
+    }
+
+    /**
+     *The following method updates and saves the file that stores series
+     * @param series takes a series as parameter to store that series
+     */
+    private void saveSeriesData(ArrayList<Series> series) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/org/example/100bedsteserier.txt"))) {
+            for (Series serie : series) {
+                String genres = arrayToString(serie.getGenres());
+                String seasons = formatSeasons(serie.getSeasonsArray()); // Use the new method
+                String seriesData = String.format("%s; %d-%s; %s; %.1f; %s;", serie.getTitle(), serie.getStartYear(), (serie.getEndYear() == 0) ? "-" : String.valueOf(serie.getEndYear()), Arrays.toString(serie.getGenres()), serie.getRating(), seasons);
+                writer.write(seriesData);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving series data " + e.getMessage());
+        }
+    }
+
+    /**
+     * Following method converts Array to a string
+     * @param array takes an Array as parameter to make that Array to a String
+     * @return return a String
+     */
+    private String arrayToString(String[] array) {
+        return "" + String.join(", ", array) + "";
+    }
+
+    /**
+     * Following method makes the admin able to add seasons
+     * @param seasons
+     * @return
+     */
+    private String formatSeasons(int[] seasons) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < seasons.length; i++) {
+            result.append(String.format("%d-%d", i + 1, seasons[i]));
+            if (i < seasons.length - 1) {
+                result.append(", ");
+            }
+        }
+        return result.toString();
+    }
     private int parseIntSafe(String s) {
         return s.isEmpty() ? 0 : Integer.parseInt(s);
+    }
+
+    public void createTextFile(User user) {
+        try {
+            String fileName = "src/main/java/org/example/favorites/" + user.getUsername() + ".txt";
+            Path filePath = Path.of(fileName);
+
+            if (!Files.exists(filePath)) {
+                Files.createFile(filePath);
+                //List<String> userCredentials = new ArrayList<>();
+                //userCredentials.add("Username: " + user.getUsername());
+                //Files.write(filePath, userCredentials);
+                ui.displayMsg("User file created: " + fileName);
+            } else {
+                ui.displayMsg("User file already exists: " + fileName);
+            }
+        } catch (IOException e) {
+            System.out.println("Error creating user file: " + e.getMessage());
+        }
     }
 }

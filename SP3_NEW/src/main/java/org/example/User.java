@@ -1,10 +1,17 @@
 package org.example;
+
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
 import java.nio.file.Path;
 
+/**
+ * @author Mads, Kevin, Daniel
+ * User class containing all the nescessary attributes to create a user
+ * contains methods relevant for a user
+ */
 public class User {
     FileIO io = new FileIO();
     TextUI ui = new TextUI();
@@ -12,85 +19,108 @@ public class User {
     private String password;
     private boolean isAdmin = false;
     private ArrayList<User> newUsersList = new ArrayList<>();
-    private ArrayList<String> myWatchList;
-    Menu menu = new Menu();
+    private ArrayList<String> favorites = new ArrayList<>();
+    private boolean loggedIn = false;
 
+    //Constructor
     public User(String username, String password, boolean isAdmin){
-
         this.username = username;
         this.password = password;
         this.isAdmin = isAdmin;
-       // myWatchList = new ArrayList<>();
-
     }
+    /**
+     * Following method creates a user
+     * @param uInputUsername
+     * @param uInputPassword
+     * @param isAdmin
+     * taking user inputs as parameters
+     * isAdmin is always set to false so a new user won't be admin per default
+     */
     public void createUser(String uInputUsername, String uInputPassword,boolean isAdmin) {
         User newUser = new User(uInputUsername, uInputPassword, isAdmin);
-
         newUsersList.add(newUser);
-
         io.saveUserData(newUsersList);
-
-        createTextFile(newUser);
+        io.createTextFile(newUser);
     }
-private void createTextFile(User user) {
-    try {
 
-        String fileName = "src/main/java/org/example/favorites/" + user.getUsername() + ".txt";
-        Path filePath = Path.of(fileName);
+    public List<String> getFavorites() {
+        try {
+            String fileName = "src/main/java/org/example/favorites/" + this.getUsername() + ".txt";
+            Path filePath = Path.of(fileName);
 
-        if (!Files.exists(filePath)) {
-            Files.createFile(filePath);
+            return Files.readAllLines(filePath);
+
+        } catch (IOException e) {
+            System.out.println("Error getting favorites: " + e.getMessage());
+            ArrayList<String>favorites=new ArrayList<String>();
+            return favorites;
+        }
+    }
+
+
+    public void addToFavorites(String mediaString) {
+        List<String> currentFavorites;
+        try {
+            currentFavorites = Files.readAllLines(Paths.get(getFavoritesFilePath()));
+        } catch (IOException e) {
+            e.printStackTrace();  // Handle the exception according to your needs
+            return;
         }
 
-        List<String> userCredentials = new ArrayList<>();
-        userCredentials.add("Username: " + user.getUsername());
+        currentFavorites.add(mediaString);
 
-
-        Files.write(filePath, userCredentials);
-
-        ui.displayMsg("User file created: " + fileName);
-
-    } catch (IOException e) {
-        System.out.println("Error creating user file: " + e.getMessage());
+        try {
+            Files.write(Paths.get(getFavoritesFilePath()), currentFavorites);
+        } catch (IOException e) {
+            e.printStackTrace();  // Handle the exception according to your needs
+        }
     }
-}
+    private String getFavoritesFilePath() {
+        return "src/main/java/org/example/favorites/" + getUsername() + ".txt";
+    }
 
-public void addToFavorites(){
-        
-}
 
-//Create new file.txt for both Watch Later and My List
 
+
+
+
+//Region setters
     public void setUsername(String username){
         this.username = username;
-
     }
     public void setPassword(String password){
         this.password = password;
     }
     public void setIsAdmin(boolean isAdmin){
         this.isAdmin = isAdmin;
-
-        //region getters
     }
-    public String getUsername(){
+//Region end
 
-        return username;
-    }
-    public String getPassword(){
+    //Region getters
+    public String getUsername(){return username;}
 
-        return password;
-    }
-    public boolean getIsAdmin(){
+    public String getPassword(){return password;}
 
-        return isAdmin;
-    }
-
+    public boolean getIsAdmin(){return isAdmin;}
+//Region end
     public boolean isAdmin() {
         return this.isAdmin;
     }
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
 
 
+
+    /**
+     * toString method
+     * makes the toString of a user look good
+     * @return
+     */
     @Override
     public String toString(){
 
